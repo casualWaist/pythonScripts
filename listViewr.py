@@ -1,3 +1,5 @@
+# pulls data from shopvox and for display on the main screen in the production area
+
 import requests, json, datetime, os, time
 
 def shouldInclude(job):
