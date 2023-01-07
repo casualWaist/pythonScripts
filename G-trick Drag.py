@@ -1,10 +1,15 @@
+# an automation script designed to skip a software redundency
+# takes RTL file of 2D shapes that are printed on a variety of substrates and converts them to G-Code for cutting
+# fiducials are dots on the outer most corners of the sheet that are used for registration
+
+
 from __future__ import division
 from decimal import Decimal
 import operator
 import math
 
 
-def fiducialvalues(rawline, nextline):
+def fiducialvalues(rawline, nextline):  # returns four points representing the bounds of the circle
     i = rawline.find(',')
     xo = Decimal(rawline[2:i])
     i += 1
@@ -27,7 +32,7 @@ def fiducialvalues(rawline, nextline):
     return xo, xt, yo, yt
 
 
-def getfiducial(rawline, nextline):
+def getfiducial(rawline, nextline):  # returns center point of fiducial
     xo, xt, yo, yt = fiducialvalues(rawline, nextline)
     x = (xo + xt) / 2
     y = (yo + yt) / 2
@@ -36,7 +41,7 @@ def getfiducial(rawline, nextline):
     return point
 
 
-def getrect(rawline, xoff, yoff):
+def getrect(rawline, xoff, yoff):  # returns array containing the G-Code sting of a rectangle
     i = rawline.find(',')
     xone = Decimal(rawline[2:i]) + xoff
     i += 1
@@ -103,7 +108,7 @@ def isfiducial(firstline, line):
         return False
 
 
-def fiducialoffset(fids):
+def fiducialoffset(fids):  # returns G-Code strings defining the positions of the fiducials
     fids.sort(key = operator.itemgetter(0,1))
     xoff = Decimal(0.125) - fids[0][0]
     yoff = Decimal(0.125) - fids[0][1]
@@ -196,7 +201,7 @@ def bez_is_line(bez):
     else:
         return False
 
-def get_arcs(bez):
+def get_arcs(bez):  # splits bezier curves into Bi-Arcs, one curve can translate to many lines of G-Code
     if bez_is_line(bez):
         return [[bez[3]]]
     else:
@@ -269,7 +274,7 @@ def isclockwise(start, end, center):
     else:
         return False
 
-def getbz(lines, xoff, yoff):
+def getbz(lines, xoff, yoff):  # processes Bézier curve's into G-Code offset fro the file's origin
     shape = ''
     addf = True
     lastx = 0
@@ -347,17 +352,19 @@ def getbz(lines, xoff, yoff):
                     lasty = y
     return [lastx, lasty, shape + 'G00 Z-0.25\nM22\n']
 
-with open('//aaserverbackup/home/1 Knife Rout/1.rtl') as origin:
+with open('//aaserverbackup/home/1 Knife Rout/1.rtl') as origin:  # file is constant and overwritten for every job 
     lines = origin.readlines()
     l = 0
     f = 0
-    preamble = 'M90\nG90\nG70\nG75\nG97 S24000\nG00 T99\n'
+    preamble = 'M90\nG90\nG70\nG75\nG97 S24000\nG00 T99\n'  # boilerplate machine initialization
     fiducials = []
     finalist = []
     shapes = []
-    toolchange = 'G97 S24000\nG00 T32\n'
+    toolchange = 'G97 S24000\nG00 T32\n'  # tool initialization
     ps = 'G98 P147 D1\nM02'
     r = []
+    
+    # find the fidutials which can appear anywere in the file
     while f < 4:
         line = lines[l]
         if 'PD;' in line and commacount(lines[l + 1]) == 23 and isfiducial(lines[l - 1], lines[l + 1]):
@@ -371,23 +378,27 @@ with open('//aaserverbackup/home/1 Knife Rout/1.rtl') as origin:
         del r[-1]
         f -= 1
     l = 0
+    
+    # each line is a shape segment, shapes are separtaed with ;
+    # G-Code is created one line at a time, shapes can have many lines
+    # A special line is needed at the end of each shape to move the machine to the new shape
     while l < len(lines):
         line = lines[l]
-        if 'PD' in line and line[2] != ';':
-            if commacount(line) == 7 and nobz(lines[l + 1]):
+        if 'PD' in line and line[2] != ';':  # is this the end of shape
+            if commacount(line) == 7 and nobz(lines[l + 1]):  # is shape a rectangle
                 shapes.append(getrect(line, xoff, yoff))
             else:
                 shape = [lines[l - 1]]
                 pu = True
                 t = 0
-                while pu:
+                while pu:  # bezie curve translation
                     if 'PU;' in lines[l + t]:
                         pu = False
                     else:
                         shape.append(lines[l + t])
                     t += 1
                 shapes.append(getbz(shape, xoff, yoff))
-        elif 'PD;' in line:
+        elif 'PD;' in line:  # ends a shape
             shape = [lines[l - 1]]
             pu = True
             t = 1
@@ -399,7 +410,7 @@ with open('//aaserverbackup/home/1 Knife Rout/1.rtl') as origin:
                 t += 1
             shapes.append(getbz(shape, xoff, yoff))
         l += 1
-    shapes.sort(key=operator.itemgetter(0,1))
+    shapes.sort(key=operator.itemgetter(0,1))  # sorts the shapes so they are cut in rows
     for shape in shapes:
         finalist.append(shape[2])
     final = preamble + finalfiducials + toolchange + ''.join(finalist) + ps
