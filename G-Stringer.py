@@ -1,3 +1,8 @@
+# script that is designed to edit a G code file by finding overlapping or adjacent line segments and either removing or combining them
+# the file is initialized by external CAM software as an array of rectangles of the same size with no space between them (sheet of printed decals for cutting)
+# the goal is to combine the rectangles into grid lines decreasing the machining time of large files
+
+
 import decimal
 
 
