@@ -1,3 +1,5 @@
+# scraps weather images off local news sites for display on the screen showing todays jobs
+
 from bs4 import BeautifulSoup as BS
 import requests
 
