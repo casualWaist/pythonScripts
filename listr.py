@@ -1,3 +1,6 @@
+# combines some of the other scripts into a single executable to prevent redundant calls
+# looks up the local data created by other scripts and creates four different html pages 
+
 import lookUpVox, datetime, traceback
 
 with open('/var/www/html/jobs/byID.txt', 'r') as idFile:
