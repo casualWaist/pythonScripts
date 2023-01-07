@@ -1,3 +1,5 @@
+# user can input a job number and get all relevent stats
+
 #!/usr/bin/python3
 import cgi
 
