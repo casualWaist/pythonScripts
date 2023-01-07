@@ -1,3 +1,5 @@
+# file from local server and opens all relavent jobs on client system
+
 import lookUpVox, os
 
 data = lookUpVox.getJobList()
