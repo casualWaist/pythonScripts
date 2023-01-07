@@ -1,3 +1,5 @@
+# cleans out the roll over calender data to start over when things went wrong
+
 import os, json
 from datetime import datetime, timedelta
 
