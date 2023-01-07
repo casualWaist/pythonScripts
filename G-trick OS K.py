@@ -1,3 +1,7 @@
+# this is literally the same code as G-trick Drag with one varibale changed
+# it exsists because we had two knife tools and two scripts was faster than any prompt to input which tool
+# just right click on the tool script, hit run, and there you go
+
 from __future__ import division
 from decimal import Decimal
 import operator
