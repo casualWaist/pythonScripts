@@ -1,3 +1,5 @@
+# calls a file hosted on local server and opens relevant jobs on the client system
+
 import requests, json, os
 
 url = 'http://192.168.0.12/prod/prodJobs.txt'
