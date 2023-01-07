@@ -1,3 +1,5 @@
+# command line tool that takes an invoice number, looks up the data, and creates a custom PDF
+
 from fpdf import FPDF
 from PIL import Image
 import requests, os, lookUpVox, io
