@@ -1,7 +1,9 @@
+# when accessed through a private server url, returned a page for each crew member to see installs assigned to them
+
 #!/usr/bin/python3
 import cgi, lookUpVox, datetime, traceback, sys
 
-user = cgi.FieldStorage()['crew'].value
+user = cgi.FieldStorage()['crew'].value  # crew value comes in from the url call and will be used to fetch data
 html = '''Content-type: text/html\r\n\r\n<html><head><title>%s</title></head><body>''' % user
 crew = {"alan": "AJJ",
            "chad": "CMT",
@@ -105,7 +107,7 @@ def makeButts(butts, div):
         htmlButts += '''<button name="%s" %s data-jId="%s">%s''' % (butt, oclk, div, butt)
     return htmlButts
 
-def qFormr(job, jId, action):
+def qFormr(job, jId, action):  #generates an html form for each job with buttons that allow user to update job data
     global html
     if action is None:
         tmi = {}
@@ -152,7 +154,7 @@ def qFormr(job, jId, action):
 try:
     installs = []
     unknowns = []
-    if today in calData:
+    if today in calData:  # look up installs and serveys
         for trip in calData[today]:
             if userIni in trip['crew']:
                 installs.append(trip)
@@ -182,7 +184,7 @@ try:
             for butt in makeButts(['alan', 'marel', 'luke', 'matt', 'chad'], csId):
                 html += butt
             html += '''</div>'''
-    for job in idData:
+    for job in idData:  # shows jobs that are completed but not installed and need to be sorted
         if idData[job]['crew'] is not None and idData[job]['crew'][0] == userIni:
             if idData[job]['area'] is not None and idData[job]['area'][0] == 'Neverland':
                 tmi = qFormr(idData[job], job, 'area')
@@ -212,7 +214,7 @@ try:
                     html += '''</div>'''
     html += '''</div></body></html>'''
     print(html)
-except Exception as e:
+except Exception as e:  # logs error and returns a message to the user
     with open("log.txt", "a") as file:
         currentTime = datetime.datetime.now()
         file.write('%s  %s\n' % (currentTime, e))
