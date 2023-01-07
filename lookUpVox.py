@@ -148,6 +148,7 @@ def setDueDates(num, date):
     data = json.loads(response.content.decode('utf-8'))
     return data
 
+# test stuff
 #setDueDates(1640, '2020-07-15')
 #data = getSOwNum(1640)
 #    if job['active'] is True and hasStep('Schedule', job['steps']):
