@@ -1,3 +1,7 @@
+# used to process button presses from pages created with creatr script 
+# takes in data imbeded in the buttons and uses it to look up and overwrite local files
+# returns html that is inserted into the page
+
 #!/usr/bin/python3
 import cgi, lookUpVox, datetime, traceback, sys
 
