@@ -1,3 +1,5 @@
+# looks up invoice data and returns some HTML that gets injected into a page
+
 #!/usr/bin/python3
 import cgi, lookUpVox, traceback, sys
 
