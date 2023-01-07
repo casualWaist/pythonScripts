@@ -1,3 +1,5 @@
+# pull all data from shopvox and update the local files
+
 import lookUpVox, datetime
 
 prod = []
