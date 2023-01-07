@@ -1,3 +1,5 @@
+# keeps a directory of current qr image files as well as a PDF containing the qr and job data
+
 import qrcode, lookUpVox, os, datetime
 from fpdf import FPDF
 
